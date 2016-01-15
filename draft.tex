@@ -1,0 +1,123 @@
+% Preamble
+% ---
+\documentclass{article}
+
+% Packages
+% ---
+\usepackage{amsmath} % Advanced math typesetting
+\usepackage{amsfonts} % Advanced math typesetting
+\usepackage{amssymb} % More Math
+\usepackage[utf8]{inputenc} % Unicode support (Umlauts etc.)
+\usepackage[ngerman]{babel} % Change hyphenation rules
+\usepackage{hyperref} % Add a link to your document
+\usepackage{graphicx} % Add pictures to your document
+\usepackage{listings} % Source code formatting and highlighting
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+
+% Title
+%---
+\title{Weighted Lower Linear Envelope Potentials}
+\author{Chang Li}
+\date{\today}
+
+% Document
+%---
+\begin{document}
+	\maketitle
+	
+	\section{Introduction}
+	
+	\section{Literature Review}
+	
+	\section{Theoretical Framework}
+	
+	\subsection{Weighted Lower Linear Envelope and Large Margin Optimization}
+	Suppose we have a binary MRFs $\mathbf{y}=\{y_1,\dots,y_n\}$, $y_i\in\{0,1\}$. A higher-order potential $\psi_c^H(\mathbf{y}_c)$ is an arbitrary function defined on cliques $\mathbf{y}_c=\{y_i : i\in c\}$ where $c\subseteq\{1,\dots,n\}$. Gould\cite{gouldlearning} proposed it with a weighted lower linear envelope potential expression
+	\begin{align}
+		\psi_c^H(\mathbf{y}_c) \triangleq \min_{k=1,\dots,K}\bigg\{a_kW_c(\mathbf{y}_c)+b_k\bigg\}
+	\end{align}
+	where $(a_k,b_k)\in\mathbb{R}^2$ are linear function parameters and
+	$$
+	W_c(\mathbf{y}_c) = \sum_{i\in c}^{}w_i^cy_i
+	$$
+	where c is a clique. $w_i^c$ is a per-variable non-negative weights for every nodes in each clique and satisfies $\sum_ {i\in c}^{}w_i^c=1$.\\\\
+	Gould\cite{gouldlearning} introduced a non-negative linear parameter vector $\boldsymbol{\theta}\in\mathbb{R}^K$ and a feature map $\boldsymbol{\phi}(\mathbf{y})\in \mathbb{R}^K$ 
+	\begin{equation*}
+		\theta_k = \left\{
+		\begin{aligned}
+		& b_1	& \text{for} \ k=0\\
+		& a_1 & \text{for}\ k=1\\
+		& a_{k-1}  & \text{for} \ k=2,\dots,K\\
+		\end{aligned}
+		\right.
+	\end{equation*}
+	\begin{equation*}
+		\phi_k = \left\{
+		\begin{aligned}
+		& 1	& \text{for} \ k=0\\
+		& W(\mathbf{y}) & \text{for}\ k=1\\
+		& \bigg(\frac{k-1}{K}-W(\mathbf{y}) \bigg)\bigg[\bigg[ W(\mathbf{y}) > \frac{k-1}{K}\bigg]\bigg]  & \text{for} \ k=2,\dots,K\\
+		\end{aligned}
+		\right.
+	\end{equation*}
+	to rewrite the Equation 1 into a linear formulation
+	\begin{align}
+		\psi_c^H(\mathbf{y}_c)=\boldsymbol{\theta}^T\boldsymbol{\phi}(\mathbf{y})
+	\end{align}
+	where $ D\boldsymbol{\theta}\geq \mathbf{0}$. Hence the Equation 2 can be optimized using max-margin framework with an additional linear constraint.
+	
+	\subsection{Structured SVM with latent variables}
+	Suppose we have a combined feature function $\Psi(\mathbf{x},\mathbf{y}) $ defined on a sample set $S=\{ ( \mathbf{x}_1,\mathbf{y}_1) ,\dots ,( \mathbf{x}_n,\mathbf{y}_n ) \} \in (\mathcal{X}\times \mathcal{Y})^n$ describes the relationship between input $\mathbf{x}$ and structured output $\mathbf{y}$. $ \mathbf{x}_i$ denots the $i$th sample and $\mathbf{y}_i$ denotes its structured label vector. The Structured SVM approach \cite{tsochantaridis2005large} is to maximize a linear discriminant function $\mathcal{F} : \mathcal{X} \times \mathcal{Y} \rightarrow \mathbb{R} $ for a given input $\mathbf{x}_i$ to derive the structured label $\mathbf{y}_i$
+	
+	$$ f_w(x) = \argmax_{\mathbf{y}\in\mathcal{Y}} F_w(\mathbf{x},\mathbf{y})$$
+	Since $\mathcal{F}$ is linear, we can rewrite this as
+	$$ f_w(x) = \argmax_{\mathbf{y}\in\mathcal{Y}} w\cdot\Psi(\mathbf{x},\mathbf{y})$$
+	The task of finding the $y^* \in \argmax_{\mathbf{y}\in\mathcal{Y}} w\cdot\Psi(\mathbf{x},\mathbf{y})$ is called 'Inference'.
+	\\\\
+	An arbitrary loss function $\Delta(\mathbf{y},\hat{\mathbf{y}}) : \mathcal{Y}\times\mathcal{Y}\rightarrow\mathbb{R}
+	$ is usde to quantify the loss associated with the prediction $\mathbf{\hat{y}}$ and the true output vector $\mathbf{y}$. $\Delta$ is non-negative. $\Delta = 0$ when $\mathbf{y} = \mathbf{\hat{y}}$ and $\Delta > 0$ for other cases. Suppose a finite training set $S=\{ ( \mathbf{x}_1,\mathbf{y}_1) ,\dots ,( \mathbf{x}_n,\mathbf{y}_n ) \}$ is generated according to a fixed but unobserved distribution $P(\mathbf{x},\mathbf{y})$, our function can be learnt through minimizing the loss on the training sample $S$
+	$$
+	R^\Delta_S(f_w) = \frac{1}{n}\sum_{i=1}^{n}\Delta(\mathbf{y}_i,f_w(\mathbf{x}_i))
+	$$
+	To include unobserved information in the model, Yu\cite{yu2009learning} extended the joint feature function  $\Psi(\mathbf{x},\mathbf{y}) $ with a latent variable $\mathbf{h}\in \mathcal{H}$ to $\Psi(\mathbf{x},\mathbf{y},\mathbf{h}) $. So the inference problem becomes
+	$$
+	 f_w(x) = \argmax_{(\mathbf{y} \times \mathbf{h}) \in \mathcal{Y} \times \mathcal{H}} w\cdot\Psi(\mathbf{x},\mathbf{y},\mathbf{h})
+	$$
+	Accordingly, the loss function can be extended as
+	$$
+	\Delta((\mathbf{y}_i,\mathbf{h}^*_i(w)),(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w)))
+	$$
+	where
+	$$
+	\mathbf{h}^*_i(w) = \argmax_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})
+	$$
+	$$
+	(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w))=\argmax_{(\mathbf{y} \times \mathbf{h}) \in \mathcal{Y} \times \mathcal{H}} w\cdot\Psi(\mathbf{x}_i,\mathbf{y},\mathbf{h})
+	$$
+	Yu\cite{yu2009learning} proved that the extended loss has an upper bound
+	\begin{align*}
+		\Delta((\mathbf{y}_i,\mathbf{h}^*_i(w)),(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w)))
+		&\leq\\
+		&\bigg(\max_{(\mathbf{\hat{y}} \times \mathbf{\hat{h}}) \in \mathcal{Y} \times \mathcal{H}} [w\cdot\Psi(\mathbf{x}_i,\mathbf{\hat{y}},\mathbf{\hat{h}}) + \Delta(\mathbf{y}_i,\mathbf{\hat{y}},\mathbf{\hat{h}})]\bigg)\\
+		&-\max_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})
+	\end{align*}
+	Hence the optimization problem for Structural SVMs with latent variables becomes
+	\begin{align*}
+	\min_w\bigg[\frac{1}{2}\|w\|^2+
+	C\sum_{i=1}^{n}\big(\max_{(\mathbf{\hat{y}} \times \mathbf{\hat{h}}) \in \mathcal{Y} \times \mathcal{H}} [w\cdot\Psi(\mathbf{x}_i,\mathbf{\hat{y}},\mathbf{\hat{h}}) + \Delta(\mathbf{y}_i,\mathbf{\hat{y}},\mathbf{\hat{h}})]\big)\\
+	-C\sum_{i=1}^{n}\big(\max_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})\big)\bigg]
+	\end{align*}
+	
+	
+	\section{Methodology}
+	
+	\section{Contribution}
+	
+	\section{Research Plan}
+	
+	
+	\bibliographystyle{ieeetr}
+	\bibliography{draft}
+\end{document}
