@@ -31,9 +31,12 @@
 	
 	\section{Literature Review}
 	
-	\section{Theoretical Framework}
+	\section{Proposal}
 	
-	\subsection{Weighted Lower Linear Envelope and Large Margin Optimization}
+	\subsection{Background}
+	
+	\subsection{Extensions}
+	\subsubsection{Weighted Lower Linear Envelope and Large Margin Optimization}
 	Suppose we have a binary MRFs $\mathbf{y}=\{y_1,\dots,y_n\}$, $y_i\in\{0,1\}$. A higher-order potential $\psi_c^H(\mathbf{y}_c)$ is an arbitrary function defined on cliques $\mathbf{y}_c=\{y_i : i\in c\}$ where $c\subseteq\{1,\dots,n\}$. Gould\cite{gouldlearning} proposed it with a weighted lower linear envelope potential expression
 	\begin{align}
 		\psi_c^H(\mathbf{y}_c) \triangleq \min_{k=1,\dots,K}\bigg\{a_kW_c(\mathbf{y}_c)+b_k\bigg\}
@@ -68,7 +71,7 @@
 	\end{align}
 	where $ D\boldsymbol{\theta}\geq \mathbf{0}$. Hence the Equation 2 can be optimized using max-margin framework with an additional linear constraint.
 	
-	\subsection{Structured SVM with latent variables}
+	\subsubsection{Structured SVM with latent variables}
 	Suppose we have a combined feature function $\Psi(\mathbf{x},\mathbf{y}) $ defined on a sample set $S=\{ ( \mathbf{x}_1,\mathbf{y}_1) ,\dots ,( \mathbf{x}_n,\mathbf{y}_n ) \} \in (\mathcal{X}\times \mathcal{Y})^n$ describes the relationship between input $\mathbf{x}$ and structured output $\mathbf{y}$. $ \mathbf{x}_i$ denots the $i$th sample and $\mathbf{y}_i$ denotes its structured label vector. The Structured SVM approach \cite{tsochantaridis2005large} is to maximize a linear discriminant function $\mathcal{F} : \mathcal{X} \times \mathcal{Y} \rightarrow \mathbb{R} $ for a given input $\mathbf{x}_i$ to derive the structured label $\mathbf{y}_i$
 	
 	$$ f_w(x) = \argmax_{\mathbf{y}\in\mathcal{Y}} F_w(\mathbf{x},\mathbf{y})$$
@@ -110,14 +113,9 @@
 	-C\sum_{i=1}^{n}\big(\max_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})\big)\bigg]
 	\end{align*}
 	
+	\section{Milestones}
 	
-	\section{Methodology}
-	
-	\section{Contribution}
-	
-	\section{Research Plan}
-	
-	
+	\renewcommand\refname{Bibliography}
 	\bibliographystyle{ieeetr}
 	\bibliography{draft}
 \end{document}
