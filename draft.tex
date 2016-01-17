@@ -18,7 +18,7 @@
 
 % Title
 %---
-\title{Optimizing Weighted Lower Linear Envelope Potentials With Latent-SVM}
+\title{Optimizing Weighted Lower Linear Envelope Potentials With Latent-SVM Framework}
 \author{Chang Li}
 \date{\today}
 
@@ -29,6 +29,7 @@
 	
 	\section{Introduction}
 	One interesting task in machine learning is labeling over complex and structured objects. Many applications such as image segmentation, motif finding and noun-phrase parsing involved with representing jointly correlated variables. Encoding consistency constraints over large number of cliques, for example, is central to the problem of image segmentation. Algorithm frameworks like Markov Random Field (MRF) containing higher order energy functions and max margin method for Structural SVM are raising interests recently due to their capability of representing structural dependencies of variables and ensuring computationally feasible approximate or exact inference. \\
+	Higher order potentials can be optimized efficiently using modern Linear Programming frameworks. For example, Kohli and Kumar\cite{kohli2009robust} developed lower linear envelope potentials by introducing auxiliary variables and reduce the potential function to a pairwise formulation. Thus the formulation can be optimized using LP programming. However, they only provide an approximate routine for the problem.\\ Another powerful algorithm called “graph-cuts” which can do exact inference on binary MRFs with internal submodular potentials was well studied in past years. Gould\cite{gouldlearning} extended the previous research via graph-cuts to do an exact inference using weighted lower linear envelope potentials and optimized the model parameters within a max-margin learning framework. However, the approximation used in their work leading to a fixed spaced break-points lower linear envelope. If the equally spaced constraint can be removed, their formulation will result in a latent SVM.\\
 	In practical, many information providing useful cues for prediction is not directly observable from data. For motif (repeated patterns in DNA sequences) finding problem, as an example, our task if to find motifs from a set of DNA sequences where the location of these motifs are unknown. Thus the information of position can be treated as hidden variable and is important to be considered in the model though it is not directly observable. The same problem raises in computer vision when we wish to learn a model from images lacking of additional annotated information. Issues like this have been long studied by many researchers and latent SVMs, which can explicitly model hidden variables with joint feature vectors, outperforms many other methods. 
 
 	
