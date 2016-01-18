@@ -39,12 +39,59 @@
 	Learning structural objects from unknown probability distribution is becoming popular in recent years. Tsochantaridis et al.\cite{tsochantaridis2005large} generalized multiclass SVMs\cite{crammer2002algorithmic} to structural SVMs by extending feature vectors to joint feature vectors which map features extracted jointly over input-output pairs to discrete output. The exact maximum a posteriori (MAP) problem thus becomes an NP-hard problem. They overcome this by using a method called “Soft-Margin Maximization” and found an upper bound of the loss function.\\
 	Based on the previous research, Yu and Joachims\cite{yu2009learning} developed latent SVM by introducing a hidden variable into the joint feature vector. They observed a fact that in real world applications hidden variables are usually intermediate results and are not required as an output. With this fact they followed “Soft-Margin” method and found an upper bound for the loss function with latent variables. However, the resulted object function is still non-convex.\\
 	Yuille and Rangarajan \cite{yuille2002concave} developed the Concave-Convex Procedure (CCCP) which is guaranteed to find a local minimum for a Difference-Convex (DC) program. Yu and Joachims\cite{yu2009learning} combined CCCP algorithm by writing their non-convex object function into a difference of two convex function and came up with a EM like 2 steps optimizing algorithm. For each iteration, they first compute latent variables utilizing current parameter vectors and then in turn optimizing parameter vectors using the standard Structural SVM algorithm with previously computed latent variables. \\
+	Higher order potentials are raising interests due to their capability to represent dependencies between complex objects. Kohli and Kumar\cite{kohli2009robust} proposed a method to represent a class of higher order potentials with lower (upper) linear envelope potentials. By introducing auxiliary variables, they reduced the linear representation to a pairwise form and proposed an approximate algorithm with standard LP program methods. Following their routine, Gould\cite{gouldlearning} extended their method to a weighted lower linear envelope in binary Markov Random Fields (MRF) which can be solved with an efficient algorithm. They showed the energy function with auxiliary variables is submodular by transforming it into a quadratic pseudo-Boolean form and how “graph-cuts” like algorithm can be applied to do exact inference. They then optimized the model’s parameters under the max margin framework\cite{tsochantaridis2005large}. \\
+	In their work they pointed out the potential relationship between their auxiliary representation and latent SVM\cite{yu2009learning}. However, since removing of their fixed space constraint will result dependence between latent variable and parameters, further research still remains open.
+
+
 
 	
 	
 	\section{Proposal}
 	
 	\subsection{Background}
+		\subsubsection{Structured SVM with latent variables}
+		Suppose we have a combined feature function $\Psi(\mathbf{x},\mathbf{y}) $ defined on a sample set $S=\{ ( \mathbf{x}_1,\mathbf{y}_1) ,\dots ,( \mathbf{x}_n,\mathbf{y}_n ) \} \in (\mathcal{X}\times \mathcal{Y})^n$ describes the relationship between input $\mathbf{x}$ and structured output $\mathbf{y}$. $ \mathbf{x}_i$ denots the $i$th sample and $\mathbf{y}_i$ denotes its structured label vector. The Structured SVM approach \cite{tsochantaridis2005large} is to maximize a linear discriminant function $\mathcal{F} : \mathcal{X} \times \mathcal{Y} \rightarrow \mathbb{R} $ for a given input $\mathbf{x}_i$ to derive the structured label $\mathbf{y}_i$
+		
+		$$ f_w(x) = \argmax_{\mathbf{y}\in\mathcal{Y}} F_w(\mathbf{x},\mathbf{y})$$
+		Since $\mathcal{F}$ is linear, we can rewrite this as
+		$$ f_w(x) = \argmax_{\mathbf{y}\in\mathcal{Y}} w\cdot\Psi(\mathbf{x},\mathbf{y})$$
+		The task of finding the $y^* \in \argmax_{\mathbf{y}\in\mathcal{Y}} w\cdot\Psi(\mathbf{x},\mathbf{y})$ is called 'Inference'.
+		\\\\
+		An arbitrary loss function $\Delta(\mathbf{y},\hat{\mathbf{y}}) : \mathcal{Y}\times\mathcal{Y}\rightarrow\mathbb{R}
+		$ is usde to quantify the loss associated with the prediction $\mathbf{\hat{y}}$ and the true output vector $\mathbf{y}$. $\Delta$ is non-negative. $\Delta = 0$ when $\mathbf{y} = \mathbf{\hat{y}}$ and $\Delta > 0$ for other cases. Suppose a finite training set $S=\{ ( \mathbf{x}_1,\mathbf{y}_1) ,\dots ,( \mathbf{x}_n,\mathbf{y}_n ) \}$ is generated according to a fixed but unobserved distribution $P(\mathbf{x},\mathbf{y})$, our function can be learnt through minimizing the loss on the training sample $S$
+		$$
+		R^\Delta_S(f_w) = \frac{1}{n}\sum_{i=1}^{n}\Delta(\mathbf{y}_i,f_w(\mathbf{x}_i))
+		$$
+		To include unobserved information in the model, Yu\cite{yu2009learning} extended the joint feature function  $\Psi(\mathbf{x},\mathbf{y}) $ with a latent variable $\mathbf{h}\in \mathcal{H}$ to $\Psi(\mathbf{x},\mathbf{y},\mathbf{h}) $. So the inference problem becomes
+		$$
+		f_w(x) = \argmax_{(\mathbf{y} \times \mathbf{h}) \in \mathcal{Y} \times \mathcal{H}} w\cdot\Psi(\mathbf{x},\mathbf{y},\mathbf{h})
+		$$
+		Accordingly, the loss function can be extended as
+		$$
+		\Delta((\mathbf{y}_i,\mathbf{h}^*_i(w)),(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w)))
+		$$
+		where
+		$$
+		\mathbf{h}^*_i(w) = \argmax_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})
+		$$
+		$$
+		(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w))=\argmax_{(\mathbf{y} \times \mathbf{h}) \in \mathcal{Y} \times \mathcal{H}} w\cdot\Psi(\mathbf{x}_i,\mathbf{y},\mathbf{h})
+		$$
+		Yu\cite{yu2009learning} proved that the extended loss has an upper bound
+		\begin{align*}
+			\Delta((\mathbf{y}_i,\mathbf{h}^*_i(w)),(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w)))
+			&\leq\\
+			&\bigg(\max_{(\mathbf{\hat{y}} \times \mathbf{\hat{h}}) \in \mathcal{Y} \times \mathcal{H}} [w\cdot\Psi(\mathbf{x}_i,\mathbf{\hat{y}},\mathbf{\hat{h}}) + \Delta(\mathbf{y}_i,\mathbf{\hat{y}},\mathbf{\hat{h}})]\bigg)\\
+			&-\max_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})
+		\end{align*}
+		Hence the optimization problem for Structural SVMs with latent variables becomes
+		\begin{align*}
+			\min_w\bigg[\frac{1}{2}\|w\|^2+
+			C\sum_{i=1}^{n}\big(\max_{(\mathbf{\hat{y}} \times \mathbf{\hat{h}}) \in \mathcal{Y} \times \mathcal{H}} [w\cdot\Psi(\mathbf{x}_i,\mathbf{\hat{y}},\mathbf{\hat{h}}) + \Delta(\mathbf{y}_i,\mathbf{\hat{y}},\mathbf{\hat{h}})]\big)\\
+			-C\sum_{i=1}^{n}\big(\max_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})\big)\bigg]
+		\end{align*}
+		
+
 		\subsubsection{Weighted Lower Linear Envelope and Large Margin Optimization}
 		Suppose we have a binary MRFs $\mathbf{y}=\{y_1,\dots,y_n\}$, $y_i\in\{0,1\}$. A higher-order potential $\psi_c^H(\mathbf{y}_c)$ is an arbitrary function defined on cliques $\mathbf{y}_c=\{y_i : i\in c\}$ where $c\subseteq\{1,\dots,n\}$. Gould\cite{gouldlearning} proposed it with a weighted lower linear envelope potential expression
 		\begin{align}
@@ -80,49 +127,7 @@
 		\end{align}
 		where $ D\boldsymbol{\theta}\geq \mathbf{0}$. Hence the Equation 2 can be optimized using max-margin framework with an additional linear constraint.
 		
-		\subsubsection{Structured SVM with latent variables}
-		Suppose we have a combined feature function $\Psi(\mathbf{x},\mathbf{y}) $ defined on a sample set $S=\{ ( \mathbf{x}_1,\mathbf{y}_1) ,\dots ,( \mathbf{x}_n,\mathbf{y}_n ) \} \in (\mathcal{X}\times \mathcal{Y})^n$ describes the relationship between input $\mathbf{x}$ and structured output $\mathbf{y}$. $ \mathbf{x}_i$ denots the $i$th sample and $\mathbf{y}_i$ denotes its structured label vector. The Structured SVM approach \cite{tsochantaridis2005large} is to maximize a linear discriminant function $\mathcal{F} : \mathcal{X} \times \mathcal{Y} \rightarrow \mathbb{R} $ for a given input $\mathbf{x}_i$ to derive the structured label $\mathbf{y}_i$
-		
-		$$ f_w(x) = \argmax_{\mathbf{y}\in\mathcal{Y}} F_w(\mathbf{x},\mathbf{y})$$
-		Since $\mathcal{F}$ is linear, we can rewrite this as
-		$$ f_w(x) = \argmax_{\mathbf{y}\in\mathcal{Y}} w\cdot\Psi(\mathbf{x},\mathbf{y})$$
-		The task of finding the $y^* \in \argmax_{\mathbf{y}\in\mathcal{Y}} w\cdot\Psi(\mathbf{x},\mathbf{y})$ is called 'Inference'.
-		\\\\
-		An arbitrary loss function $\Delta(\mathbf{y},\hat{\mathbf{y}}) : \mathcal{Y}\times\mathcal{Y}\rightarrow\mathbb{R}
-		$ is usde to quantify the loss associated with the prediction $\mathbf{\hat{y}}$ and the true output vector $\mathbf{y}$. $\Delta$ is non-negative. $\Delta = 0$ when $\mathbf{y} = \mathbf{\hat{y}}$ and $\Delta > 0$ for other cases. Suppose a finite training set $S=\{ ( \mathbf{x}_1,\mathbf{y}_1) ,\dots ,( \mathbf{x}_n,\mathbf{y}_n ) \}$ is generated according to a fixed but unobserved distribution $P(\mathbf{x},\mathbf{y})$, our function can be learnt through minimizing the loss on the training sample $S$
-		$$
-		R^\Delta_S(f_w) = \frac{1}{n}\sum_{i=1}^{n}\Delta(\mathbf{y}_i,f_w(\mathbf{x}_i))
-		$$
-		To include unobserved information in the model, Yu\cite{yu2009learning} extended the joint feature function  $\Psi(\mathbf{x},\mathbf{y}) $ with a latent variable $\mathbf{h}\in \mathcal{H}$ to $\Psi(\mathbf{x},\mathbf{y},\mathbf{h}) $. So the inference problem becomes
-		$$
-		f_w(x) = \argmax_{(\mathbf{y} \times \mathbf{h}) \in \mathcal{Y} \times \mathcal{H}} w\cdot\Psi(\mathbf{x},\mathbf{y},\mathbf{h})
-		$$
-		Accordingly, the loss function can be extended as
-		$$
-		\Delta((\mathbf{y}_i,\mathbf{h}^*_i(w)),(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w)))
-		$$
-		where
-		$$
-		\mathbf{h}^*_i(w) = \argmax_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})
-		$$
-		$$
-		(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w))=\argmax_{(\mathbf{y} \times \mathbf{h}) \in \mathcal{Y} \times \mathcal{H}} w\cdot\Psi(\mathbf{x}_i,\mathbf{y},\mathbf{h})
-		$$
-		Yu\cite{yu2009learning} proved that the extended loss has an upper bound
-		\begin{align*}
-		\Delta((\mathbf{y}_i,\mathbf{h}^*_i(w)),(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w)))
-		&\leq\\
-		&\bigg(\max_{(\mathbf{\hat{y}} \times \mathbf{\hat{h}}) \in \mathcal{Y} \times \mathcal{H}} [w\cdot\Psi(\mathbf{x}_i,\mathbf{\hat{y}},\mathbf{\hat{h}}) + \Delta(\mathbf{y}_i,\mathbf{\hat{y}},\mathbf{\hat{h}})]\bigg)\\
-		&-\max_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})
-		\end{align*}
-		Hence the optimization problem for Structural SVMs with latent variables becomes
-		\begin{align*}
-		\min_w\bigg[\frac{1}{2}\|w\|^2+
-		C\sum_{i=1}^{n}\big(\max_{(\mathbf{\hat{y}} \times \mathbf{\hat{h}}) \in \mathcal{Y} \times \mathcal{H}} [w\cdot\Psi(\mathbf{x}_i,\mathbf{\hat{y}},\mathbf{\hat{h}}) + \Delta(\mathbf{y}_i,\mathbf{\hat{y}},\mathbf{\hat{h}})]\big)\\
-		-C\sum_{i=1}^{n}\big(\max_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})\big)\bigg]
-		\end{align*}
-		
-	
+
 	\subsection{Extensions}
 
 
