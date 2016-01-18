@@ -12,6 +12,7 @@
 \usepackage{hyperref} % Add a link to your document
 \usepackage{graphicx} % Add pictures to your document
 \usepackage{listings} % Source code formatting and highlighting
+\usepackage{booktabs}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 
@@ -120,13 +121,14 @@
 	\subsection{Extensions}
 	
 	The main goal of our project is to study the relationship between latent SVM and MRF with higher potentials. As mentioned above, since $b_k$ is a function of $a_k$ and we can retrieve auxiliary vector $\mathbf{z}$ given labels vector $\mathbf{y}$, the object function can be treated as a latent SVM if we could remove the equally spaced constraint.  Challenges remains are how to re-parameterized the energy function without fixed space constraint and solving the non-convex formulation. \\
-	Other interesting possible extensions including but not limited to extending loss function, parallel inference using dual decomposition and another generalized potentials might be also studied. Since in \cite{gouldlearning} only consistency constraint is considered (using Hamming Loss), Pletscher\cite{pletscher2012learning} proposed a more sophisticated loss function to encode  higher order statistics. 
+	We plan to implement our algorithm using MATLAB and Python language. Many existing efficient packages including Latent SVM-struct\cite{yu2009learning} and SVM-struct\cite{tsochantaridis2005large} may be used in our implementation. Our algorithm will be tested on Weizmann Horse dataset\cite{borenstein2002class}\cite{borenstein2008combined}.\\
+	Other interesting possible extensions including but not limited to extending loss function, parallel inference using dual decomposition and another generalized potentials might also be studied. Since in \cite{gouldlearning} only consistency constraint is considered (using Hamming Loss), Pletscher\cite{pletscher2012learning} proposed a more sophisticated loss function to encode  higher order statistics. 
 	A parallel training algorithm was explored\cite{komodakis2014framework} by utilizing dual decomposition principle to do exact loss-augmented inference within a max-margin learning framework.
 	 Li\cite{li2013exploring} proposed a general class of high order potential called Compositional High Order Pattern Potentials (CHOPPs) which can be optimized using standard algorithm for Restricted Boltzmann Machines (RBMs).\\
 	 
-	
-
 	\section{Milestones}
+	\includegraphics[scale = 0.8]{Milestones.png}
+	
 	
 	\renewcommand\refname{Bibliography}
 	\bibliographystyle{ieeetr}
