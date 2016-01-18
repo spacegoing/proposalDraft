@@ -49,19 +49,7 @@
 	\section{Proposal}
 	
 	\subsection{Background}
-		\subsubsection{Structured SVM with latent variables}
-		Suppose we have a combined feature function $\Psi(\mathbf{x},\mathbf{y}) $ defined on a sample set $S=\{ ( \mathbf{x}_1,\mathbf{y}_1) ,\dots ,( \mathbf{x}_n,\mathbf{y}_n ) \} \in (\mathcal{X}\times \mathcal{Y})^n$ describes the relationship between input $\mathbf{x}$ and structured output $\mathbf{y}$. $ \mathbf{x}_i$ denots the $i$th sample and $\mathbf{y}_i$ denotes its structured label vector. The Structured SVM approach \cite{tsochantaridis2005large} is to maximize a linear discriminant function $\mathcal{F} : \mathcal{X} \times \mathcal{Y} \rightarrow \mathbb{R} $ for a given input $\mathbf{x}_i$ to derive the structured label $\mathbf{y}_i$
-		
-		$$ f_w(x) = \argmax_{\mathbf{y}\in\mathcal{Y}} F_w(\mathbf{x},\mathbf{y})$$
-		Since $\mathcal{F}$ is linear, we can rewrite this as
-		$$ f_w(x) = \argmax_{\mathbf{y}\in\mathcal{Y}} w\cdot\Psi(\mathbf{x},\mathbf{y})$$
-		The task of finding the $y^* \in \argmax_{\mathbf{y}\in\mathcal{Y}} w\cdot\Psi(\mathbf{x},\mathbf{y})$ is called 'Inference'.
-		\\\\
-		An arbitrary loss function $\Delta(\mathbf{y},\hat{\mathbf{y}}) : \mathcal{Y}\times\mathcal{Y}\rightarrow\mathbb{R}
-		$ is usde to quantify the loss associated with the prediction $\mathbf{\hat{y}}$ and the true output vector $\mathbf{y}$. $\Delta$ is non-negative. $\Delta = 0$ when $\mathbf{y} = \mathbf{\hat{y}}$ and $\Delta > 0$ for other cases. Suppose a finite training set $S=\{ ( \mathbf{x}_1,\mathbf{y}_1) ,\dots ,( \mathbf{x}_n,\mathbf{y}_n ) \}$ is generated according to a fixed but unobserved distribution $P(\mathbf{x},\mathbf{y})$, our function can be learnt through minimizing the loss on the training sample $S$
-		$$
-		R^\Delta_S(f_w) = \frac{1}{n}\sum_{i=1}^{n}\Delta(\mathbf{y}_i,f_w(\mathbf{x}_i))
-		$$
+		\subsubsection{Structural SVMs with latent variables}
 		To include unobserved information in the model, Yu\cite{yu2009learning} extended the joint feature function  $\Psi(\mathbf{x},\mathbf{y}) $ with a latent variable $\mathbf{h}\in \mathcal{H}$ to $\Psi(\mathbf{x},\mathbf{y},\mathbf{h}) $. So the inference problem becomes
 		$$
 		f_w(x) = \argmax_{(\mathbf{y} \times \mathbf{h}) \in \mathcal{Y} \times \mathcal{H}} w\cdot\Psi(\mathbf{x},\mathbf{y},\mathbf{h})
@@ -77,7 +65,11 @@
 		$$
 		(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w))=\argmax_{(\mathbf{y} \times \mathbf{h}) \in \mathcal{Y} \times \mathcal{H}} w\cdot\Psi(\mathbf{x}_i,\mathbf{y},\mathbf{h})
 		$$
-		Yu\cite{yu2009learning} proved that the extended loss has an upper bound
+		However, this formulation of loss function can not be applied ``loss-augmented inference'' because the dependece on $\mathbf{h}^*_i(w)$ of the ground truth variable $y_i$.  Yu\cite{yu2009learning} argued that the in real world applications, $\mathbf{h}^*_i(w)$ is usually an intermediate result and is not required as an output. And their work focus on the case when
+		$$
+		\Delta((\mathbf{y}_i,\mathbf{h}^*_i(w)),(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w)))=\Delta(\mathbf{y}_i,\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w))
+		$$
+		The ``loss-augmented inference'' of this formulation can be done as:
 		\begin{align*}
 			\Delta((\mathbf{y}_i,\mathbf{h}^*_i(w)),(\mathbf{\hat{y}}_i(w),\mathbf{\hat{h}}_i(w)))
 			&\leq\\
@@ -87,10 +79,10 @@
 		Hence the optimization problem for Structural SVMs with latent variables becomes
 		\begin{align*}
 			\min_w\bigg[\frac{1}{2}\|w\|^2+
-			C\sum_{i=1}^{n}\big(\max_{(\mathbf{\hat{y}} \times \mathbf{\hat{h}}) \in \mathcal{Y} \times \mathcal{H}} [w\cdot\Psi(\mathbf{x}_i,\mathbf{\hat{y}},\mathbf{\hat{h}}) + \Delta(\mathbf{y}_i,\mathbf{\hat{y}},\mathbf{\hat{h}})]\big)\\
-			-C\sum_{i=1}^{n}\big(\max_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})\big)\bigg]
+			C\sum_{i=1}^{n}\big(\max_{(\mathbf{\hat{y}} \times \mathbf{\hat{h}}) \in \mathcal{Y} \times \mathcal{H}} [w\cdot\Psi(\mathbf{x}_i,\mathbf{\hat{y}},\mathbf{\hat{h}}) + \Delta(\mathbf{y}_i,\mathbf{\hat{y}},\mathbf{\hat{h}})]\big)\bigg]\\
+			-\bigg[C\sum_{i=1}^{n}\big(\max_{\mathbf{h} \in \mathcal{H}} w \cdot \Psi(\mathbf{x}_i,\mathbf{y}_i,\mathbf{h})\big)\bigg]
 		\end{align*}
-		
+		which is the difference of two convex functions and can be solved using CCCP\cite{yuille2002concave} algorithm.
 
 		\subsubsection{Weighted Lower Linear Envelope and Large Margin Optimization}
 		Suppose we have a binary MRFs $\mathbf{y}=\{y_1,\dots,y_n\}$, $y_i\in\{0,1\}$. A higher-order potential $\psi_c^H(\mathbf{y}_c)$ is an arbitrary function defined on cliques $\mathbf{y}_c=\{y_i : i\in c\}$ where $c\subseteq\{1,\dots,n\}$. Gould\cite{gouldlearning} proposed it with a weighted lower linear envelope potential expression
