@@ -90,7 +90,7 @@
 		W_c(\mathbf{y}_c) = \sum_{i\in c}^{}w_i^cy_i
 		$$
 		where c is a clique. $w_i^c$ is a per-variable non-negative weight for every nodes in each clique and satisfies $\sum_ {i\in c}^{}w_i^c=1$. Thus $W_c(\mathbf{y}_c) \in [0,1]$.\\\\
-		Gould\cite{gouldlearning} reparameterized the potential by sampling $K$ break points uniformly distributed on $[0,1]$. Let linear parameter vector $\boldsymbol{\theta}\in\mathbb{R}^K$ be the sampled values, the energy function satisfying all propositions in \cite{gouldlearning} can be writen as  
+		Gould\cite{gouldlearning} reparameterized the potential by sampling $K$ break points uniformly distributed on $[0,1]$. Let linear parameter vector $\boldsymbol{\theta}\in\mathbb{R}^K$ be the sampled values, the energy function satisfying all propositions in \cite{gouldlearning} can be writen as the multiplication of
 		\begin{equation*}
 		\theta_k = \left\{
 		\begin{aligned}
@@ -100,6 +100,7 @@
 		\end{aligned}
 		\right.
 		\end{equation*}
+		where $b_{k+1}=(a_k-a_{k+1})\frac{k}{K}+b_k$, and
 		\begin{equation*}
 		\phi_k = \left\{
 		\begin{aligned}
@@ -109,7 +110,7 @@
 		\end{aligned}
 		\right.
 		\end{equation*}
-		where $\boldsymbol{\phi}(\mathbf{y})\in \mathbb{R}^K$ is the correspondin feature map. Thus we can rewrite the Equation 1 into a linear form
+		where $\boldsymbol{\phi}(\mathbf{y})\in \mathbb{R}^K$ is the corresponding feature map. Thus we can rewrite the Equation 1 into a linear form
 		\begin{align}
 		\psi_c^H(\mathbf{y}_c)=\boldsymbol{\theta}^T\boldsymbol{\phi}(\mathbf{y})
 		\end{align}
@@ -118,9 +119,11 @@
 
 	\subsection{Extensions}
 	
-	
-	+++++++++++
-	Other extensions may including deep infrastructure and improve loss function and parallel computing
+	The main goal of our project is to study the relationship between latent SVM and MRF with higher potentials. As mentioned above, since $b_k$ is a function of $a_k$ and we can retrieve auxiliary vector $\mathbf{z}$ given labels vector $\mathbf{y}$, the object function can be treated as a latent SVM if we could remove the equally spaced constraint.  Challenges remains are how to re-parameterized the energy function without fixed space constraint and solving the non-convex formulation. \\
+	Other interesting possible extensions including but not limited to extending loss function, parallel inference using dual decomposition and another generalized potentials might be also studied. Since in \cite{gouldlearning} only consistency constraint is considered (using Hamming Loss), Pletscher\cite{pletscher2012learning} proposed a more sophisticated loss function to encode  higher order statistics. 
+	A parallel training algorithm was explored\cite{komodakis2014framework} by utilizing dual decomposition principle to do exact loss-augmented inference within a max-margin learning framework.
+	 Li\cite{li2013exploring} proposed a general class of high order potential called Compositional High Order Pattern Potentials (CHOPPs) which can be optimized using standard algorithm for Restricted Boltzmann Machines (RBMs).\\
+	 
 	
 
 	\section{Milestones}
