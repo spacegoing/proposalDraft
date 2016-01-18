@@ -36,7 +36,10 @@
 	In this project, our goal is to study the relationship between the algorithm proposed in \cite{gouldlearning} and latent SVM framework. The main challenge is how to relax the fixed space constraint and find an auxiliary variable independent approximation of the lower linear envelope. We will experiment our algorithm on Weizmann Horse dataset\cite{borenstein2002class}\cite{borenstein2008combined}. Other extensions may also be studied, e.g. extending the loss function\cite{pletscher2012learning}.
 
 	\section{Literature Review}
-	
+	Learning structural objects from unknown probability distribution is becoming popular in recent years. Tsochantaridis et al.\cite{tsochantaridis2005large} generalized multiclass SVMs\cite{crammer2002algorithmic} to structural SVMs by extending feature vectors to joint feature vectors which map features extracted jointly over input-output pairs to discrete output. The exact maximum a posteriori (MAP) problem thus becomes an NP-hard problem. They overcome this by using a method called “Soft-Margin Maximization” and found an upper bound of the loss function.\\
+	Based on the previous research, Yu and Joachims\cite{yu2009learning} developed latent SVM by introducing a hidden variable into the joint feature vector. They observed a fact that in real world applications hidden variables are usually intermediate results and are not required as an output. With this fact they followed “Soft-Margin” method and found an upper bound for the loss function with latent variables. However, the resulted object function is still non-convex.\\
+	Yuille and Rangarajan \cite{yuille2002concave} developed the Concave-Convex Procedure (CCCP) which is guaranteed to find a local minimum for a Difference-Convex (DC) program. Yu and Joachims\cite{yu2009learning} combined CCCP algorithm by writing their non-convex object function into a difference of two convex function and came up with a EM like 2 steps optimizing algorithm. For each iteration, they first compute latent variables utilizing current parameter vectors and then in turn optimizing parameter vectors using the standard Structural SVM algorithm with previously computed latent variables. \\
+
 	
 	
 	\section{Proposal}
