@@ -1,0 +1,93 @@
+% Preamble
+% ---
+\documentclass{article}
+
+% Packages
+% ---
+\usepackage{amsmath} % Advanced math typesetting
+\usepackage{amsfonts} % Advanced math typesetting
+\usepackage{amssymb} % More Math
+\usepackage[utf8]{inputenc} % Unicode support (Umlauts etc.)
+\usepackage[ngerman]{babel} % Change hyphenation rules
+\usepackage{hyperref} % Add a link to your document
+\usepackage{graphicx} % Add pictures to your document
+\usepackage{listings} % Source code formatting and highlighting
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+
+% Title
+%---
+\title{Optimizing Weighted Lower Linear Envelope Potentials Within Latent-SVM Framework}
+\author{Chang Li}
+\date{\today}
+
+% Document
+%---
+\begin{document}
+	\maketitle
+	\section{Fixed Space Formulation}
+	$a_i=K(\theta_i-\theta_{i-1})$\\
+	If $i =1$:
+	$$
+	b_1 = 0
+	$$
+	$$
+	a_1 = K*b_1
+	$$
+	If $i \geq 2$
+	\begin{align*}
+	a_i&x_{i-1}+b_i= a_{i-1}x_{i-1}+b_{i-1}\\
+	\frac{i-1}{K}&a_i+b_i=\frac{i-1}{K}a_{i-1}+b_{i-1}\\
+	b_i &= -\frac{i-1}{K}a_i+\frac{i-1}{K}a_{i-1}+b_{i-1}\\
+	&=-\frac{i-1}{K}a_i+\frac{i-1}{K}a_{i-1}-\frac{i-2}{K}a_{i-1}+\frac{i-2}{K}a_{i-2}+\dots-\frac{2-1}{K}a_2+\frac{2-1}{K}a_1+b_1\\
+	&=-\frac{i-1}{K}a_i+\frac{1}{K}(a_{i-1}+\dots+a_1)+b_1
+	\end{align*}
+	Therefore, if $i \geq 2$:
+	$$
+	a_i*W(y)+b_i=a_i*W(y)+ (-\frac{i-1}{K}a_i)+\frac{1}{K}(a_{i-1}+\dots+a_1)+b_1
+	$$
+	\section{Random spaced samples}
+	If we remove the fixed space constraint, sample $K$ breakpoints $\{x_0,x_2,\dots,x_{K-1}\}$ from interval $[0,1]$ randomly. $x_0=0$ and $x_{K-1}=1$.\\
+	$a_i=(x_i-x_{i-1})(\theta_i-\theta_{i-1})$\\
+	If $i =1$:
+	$$
+	\theta_0=b_1 = 0
+	$$
+	$$
+	a_1 =\frac{\theta_1-\theta_0}{x_1-x_0}= x_1*\theta_1
+	$$
+	If $i \geq 2$
+	\begin{align*}
+	a_i&x_{i-1}+b_i = a_{i-1}x_{i-1}+b_{i-1}\\
+	b_i&= -x_{i-1}a_i+x_{i-1}a_{i-1}+b_{i-1}\\
+	&=-x_{i-1}a_i+x_{i-1}a_{i-1}-x_{i-2}a_{i-1}+x_{i-2}a_{i-2}+\dots-x_{2-1}a_2+x_{2-1}a_1+b_1\\
+	&=-x_{i-1}a_i+(x_{i-1}-x_{i-2})a_{i-1}+\dots+(x_2-x_1)a_2+(x_1-x_0)a_1+b_1
+	\end{align*}
+	Therefore, if $i \geq 2$:
+	\begin{align*}
+	a_i*W(y)+b_i=&a_i*W(y)+\\
+	&(-x_{i-1})a_i+(x_{i-1}-x_{i-2})a_{i-1}+\dots\\
+	&+(x_2-x_1)a_2+(x_1-x_0)a_1+b_1
+	\end{align*}
+	We can express the energy function as $E(\mathbf{y},\mathbf{\theta})=\mathbb{\theta}^T\phi(\mathbf{y})$
+	Where,
+	\begin{equation*}
+	\theta_k = \left\{
+	\begin{aligned}
+	& b_1	& \text{for} \ k=0\\
+	& a_1 & \text{for}\ k=1\\
+	& a_{k-1}-a_k  & \text{for} \ k=2,\dots,K\\
+	\end{aligned}
+	\right.
+	\end{equation*}
+	\begin{equation*}
+	\phi_k = \left\{
+	\begin{aligned}
+	& 1	& \text{for} \ k=0\\
+	& W(\mathbf{y}) & \text{for}\ k=1\\
+	& \bigg(x_{k-1}-W(\mathbf{y}) \bigg)\bigg[\bigg[ W(\mathbf{y}) > x_{k-1}\bigg]\bigg]  & \text{for} \ k=2,\dots,K\\
+	\end{aligned}
+	\right.
+	\end{equation*}
+\end{document}
